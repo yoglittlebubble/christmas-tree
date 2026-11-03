@@ -1,0 +1,294 @@
+:root {
+  --gold: #f6d089;
+  --ice: #cfe4ff;
+  --ink: #05070f;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--ink);
+  color: #eaf1ff;
+  font-family: "Helvetica Neue", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+#scene {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  outline: none;
+}
+
+/* 暗角，让中心的暖光更突出 */
+.vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(120% 90% at 50% 55%, transparent 35%, rgba(2, 4, 10, 0.5) 78%, rgba(1, 2, 6, 0.9) 100%);
+}
+
+.hero {
+  position: fixed;
+  top: clamp(22px, 5vh, 52px);
+  left: clamp(22px, 4.5vw, 64px);
+  right: auto;
+  max-width: 56vw;
+  text-align: left;
+  pointer-events: none;
+  animation: rise 1.6s cubic-bezier(0.16, 1, 0.3, 1) both 0.5s;
+}
+
+.eyebrow {
+  font-size: 9px;
+  letter-spacing: 0.5em;
+  text-indent: 0.5em;
+  color: rgba(207, 228, 255, 0.5);
+  margin-bottom: 12px;
+}
+
+.hero h1 {
+  font-family: "Didot", "Times New Roman", "Songti SC", serif;
+  font-weight: 400;
+  font-size: clamp(30px, 4.6vw, 62px);
+  letter-spacing: 0.04em;
+  line-height: 1;
+  background: linear-gradient(180deg, #fffaf0 8%, var(--gold) 62%, #a97b3a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 18px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 26px rgba(246, 208, 137, 0.24));
+}
+
+.sub {
+  margin-top: 13px;
+  font-size: clamp(11px, 1vw, 13px);
+  letter-spacing: 0.18em;
+  color: rgba(207, 228, 255, 0.48);
+}
+
+.hint {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%) translateY(14px);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: rgba(207, 228, 255, 0.38);
+  pointer-events: none;
+  animation: riseCenter 1.4s ease both 1.2s;
+}
+
+.hint i {
+  width: 22px;
+  height: 1px;
+  background: rgba(207, 228, 255, 0.22);
+}
+
+/* ------------------------------ 控制面板 ------------------------------ */
+.panel {
+  position: fixed;
+  right: clamp(16px, 3vw, 40px);
+  bottom: clamp(16px, 3vh, 40px);
+  width: 232px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(207, 228, 255, 0.12);
+  background: linear-gradient(180deg, rgba(13, 21, 38, 0.68), rgba(8, 13, 26, 0.6));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+  animation: rise 1.4s ease both 1.5s;
+}
+
+.panel-title {
+  font-size: 9px;
+  letter-spacing: 0.32em;
+  text-indent: 0.32em;
+  color: rgba(207, 228, 255, 0.35);
+  padding: 0 2px 2px;
+}
+
+.panel-row {
+  display: flex;
+  gap: 8px;
+}
+
+.panel-row .toggle {
+  flex: 1;
+}
+
+.toggle {
+  appearance: none;
+  cursor: pointer;
+  padding: 9px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(207, 228, 255, 0.14);
+  background: rgba(12, 20, 38, 0.42);
+  color: rgba(207, 228, 255, 0.45);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  font-family: inherit;
+  transition: border-color 0.35s ease, background 0.35s ease, color 0.35s ease, box-shadow 0.35s ease;
+}
+
+.toggle:hover {
+  border-color: rgba(246, 208, 137, 0.4);
+  color: rgba(255, 246, 228, 0.85);
+}
+
+.toggle.is-on {
+  border-color: rgba(246, 208, 137, 0.45);
+  background: rgba(246, 208, 137, 0.12);
+  color: var(--gold);
+  box-shadow: 0 0 18px rgba(246, 208, 137, 0.14) inset;
+}
+
+.toggle:focus-visible,
+.slider-row input:focus-visible {
+  outline: 1px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* ------------------------------ 亮度条 ------------------------------ */
+.slider-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 7px 8px;
+  padding: 9px 12px 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(207, 228, 255, 0.1);
+  background: rgba(9, 16, 30, 0.38);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: rgba(207, 228, 255, 0.62);
+  cursor: pointer;
+}
+
+.slider-row output {
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+  font-size: 10px;
+}
+
+.slider-row input[type="range"] {
+  --value: 82%;
+  grid-column: 1 / -1;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  margin: 3px 0 1px;
+  border-radius: 999px;
+  outline: none;
+  cursor: pointer;
+  background: linear-gradient(
+    90deg,
+    var(--gold) 0%,
+    var(--gold) var(--value),
+    rgba(207, 228, 255, 0.16) var(--value),
+    rgba(207, 228, 255, 0.16) 100%
+  );
+}
+
+.slider-row input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border: none;
+  border-radius: 50%;
+  background: #ffe9bd;
+  box-shadow: 0 0 12px rgba(246, 208, 137, 0.85);
+}
+
+.slider-row input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: none;
+  border-radius: 50%;
+  background: #ffe9bd;
+  box-shadow: 0 0 12px rgba(246, 208, 137, 0.85);
+}
+
+/* 首帧遮罩，避免闪一下白 */
+.curtain {
+  position: fixed;
+  inset: 0;
+  background: var(--ink);
+  pointer-events: none;
+  transition: opacity 1.1s ease;
+}
+
+.curtain.is-hidden {
+  opacity: 0;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes riseCenter {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@media (max-width: 720px) {
+  .panel {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    width: auto;
+    max-width: 360px;
+    margin: 0 auto;
+  }
+  .hint {
+    display: none;
+  }
+  .hero {
+    top: 22px;
+    left: 20px;
+    right: 20px;
+    max-width: none;
+  }
+  .hero h1 {
+    font-size: clamp(30px, 10vw, 48px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero,
+  .hint,
+  .panel {
+    animation: none;
+  }
+}

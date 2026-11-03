@@ -1,0 +1,7 @@
+node_modules
+.vite-cache
+.npm-cache
+dist
+*.log
+.chrome-profile
+screenshots
