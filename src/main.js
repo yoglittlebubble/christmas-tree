@@ -135,10 +135,16 @@ composer.addPass(bloom)
 composer.addPass(new OutputPass())
 
 /* ==================================================================
-   4. 交互：飘雪开关 / 室内灯光开关 / 亮度条 / 自动旋转
+   4. 交互：飘雪 / 室内灯光 / 亮度条 / 自动旋转 / 背景音乐
 ================================================================== */
 
-const state = { snow: true, lights: true, rotate: true, level: 0.82 }
+// 背景音乐：默认关闭，点击开关后播放，循环
+const bgm = new Audio(`${import.meta.env.BASE_URL}audio/christmas-jingle-bells.mp3`)
+bgm.loop = true
+bgm.volume = 0.55
+bgm.preload = 'auto'
+
+const state = { snow: true, lights: true, rotate: true, music: false, level: 0.82 }
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 if (reduceMotion) {
@@ -159,6 +165,18 @@ document.querySelectorAll('.toggle').forEach((btn) => {
     if (key === 'snow') snow.points.visible = state[key]
     if (key === 'lights') lighting.setOn(state[key])
     if (key === 'rotate') controls.autoRotate = state[key]
+    if (key === 'music') {
+      if (state.music) {
+        bgm.play().catch(() => {
+          // 浏览器拦截播放时，把开关恢复为关闭
+          state.music = false
+          btn.classList.remove('is-on')
+          btn.setAttribute('aria-pressed', 'false')
+        })
+      } else {
+        bgm.pause()
+      }
+    }
   })
 })
 
@@ -221,5 +239,5 @@ requestAnimationFrame(() => {
 
 // 开发环境暴露一份场景引用，方便在控制台调试镜头与灯光
 if (import.meta.env.DEV) {
-  window.__scene = { camera, controls, state, lighting, snow }
+  window.__scene = { camera, controls, state, lighting, snow, bgm }
 }
